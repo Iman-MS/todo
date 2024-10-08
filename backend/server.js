@@ -5,7 +5,7 @@ import hpp from "hpp";
 import cors from "cors";
 
 import connectDB from "./config/db.js";
-import errorHandler from "./utils/middleware/error.js";
+import errorHandler from "./middleware/error.js";
 
 import tasks from "./routes/tasks.js";
 
@@ -16,6 +16,8 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 const app = express();
+
+app.use(express.json());
 
 app.use(mongoSanitize()); // santizie data
 app.use(hpp()); // prevent http params pollution
