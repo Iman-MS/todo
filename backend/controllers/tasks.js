@@ -4,9 +4,27 @@ import asyncHandler from "../utils/async.js";
 import ErrorResponse from "../utils/ErrorResponse.js";
 
 export const getAllTasks = asyncHandler(async (req, res, next) => {
-  const tasks = await Task.find();
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
 
-  res.status(200).json({ success: true, data: tasks });
+  const tasks = await Task.find()
+    .skip(limit * (page - 1))
+    .limit(limit);
+
+  const total = await Task.countDocuments();
+  const totalPages = Math.ceil(total / limit);
+
+  res.status(200).json({
+    success: true,
+    data: tasks,
+    pagination: {
+      totalTasks: total,
+      currentPage: page,
+      totalPages,
+      limit,
+      hasNextPage: page < totalPages,
+    },
+  });
 });
 
 export const createTask = asyncHandler(async (req, res, next) => {
